@@ -55,8 +55,6 @@ namespace electronicwatches.functions.Function
                 });
             }
 
-            Console.Write("**************************"+time.BusinessHour);
-            log.LogInformation("1." + time.BusinessHour);
 
             TimeEntity timeEntity = new TimeEntity
             {
@@ -71,7 +69,7 @@ namespace electronicwatches.functions.Function
 
             TableOperation addOperation = TableOperation.Insert(timeEntity);
             await timeTable.ExecuteAsync(addOperation);
-            string message = "New time stored in table"+ timeEntity.BusinessHour;
+            string message = "New time stored in table";
             log.LogInformation(message);
            
             return new OkObjectResult(new Response
@@ -81,5 +79,91 @@ namespace electronicwatches.functions.Function
                 Result = timeEntity
             });
         }
+
+
+        [FunctionName(nameof(Getall))]
+        public static async Task<IActionResult> Getall(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "time")] HttpRequest req,
+            [Table("time", Connection = "AzureWebJobsStorage")] CloudTable timeTable,
+            ILogger log)
+        {
+            log.LogInformation("Get all recieved.");
+
+            TableQuery<TimeEntity> table = new TableQuery<TimeEntity>();
+            TableQuerySegment<TimeEntity> querys = await timeTable.ExecuteQuerySegmentedAsync(table, null);
+
+            string message = "Retrieved all fields";
+            log.LogInformation(message);
+
+            return new OkObjectResult(new Response
+            {
+                Success = true,
+                Message = message,
+                Result = querys
+            });
+        }
+
+        [FunctionName(nameof(GetbyId))]
+        public static async Task<IActionResult> GetbyId(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "time/{id}")] HttpRequest req,
+            [Table("time", "TIME", "{id}", Connection = "AzureWebJobsStorage")] TimeEntity timeEntity,
+            string id,
+            ILogger log)
+        {
+            log.LogInformation($"get by id: {id}, recieved");
+
+            if(timeEntity == null)
+            {
+                return new BadRequestObjectResult(new Response
+                {
+                    Success = false,
+                    Message = "Not Found"
+                });
+            }
+
+            string message = $"Field: {timeEntity.RowKey}, retrieved";
+            log.LogInformation(message);
+
+            return new OkObjectResult(new Response
+            {
+                Success = true,
+                Message = message,
+                Result = timeEntity
+            });
+
+        }
+
+            [FunctionName(nameof(DeletebyId))]
+        public static async Task<IActionResult> DeletebyId(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "time/{id}")] HttpRequest req,
+            [Table("time", "TIME", "{id}", Connection = "AzureWebJobsStorage")] TimeEntity timeEntity,
+            [Table("time", Connection = "AzureWebJobsStorage")] CloudTable cloudTable,
+            string id,
+            ILogger log)
+        {
+            log.LogInformation($"Delete: {id}, recieved");
+
+            if (timeEntity == null)
+            {
+                return new BadRequestObjectResult(new Response
+                {
+                    Success = false,
+                    Message = "Not Found"
+                });
+            }
+
+            await cloudTable.ExecuteAsync(TableOperation.Delete(timeEntity));
+            string message = $"Field: {timeEntity.RowKey}, deleted";
+            log.LogInformation(message);
+
+            return new OkObjectResult(new Response
+            {
+                Success = true,
+                Message = message,
+                Result = timeEntity
+            });
+        }
+
+
     }
 }
