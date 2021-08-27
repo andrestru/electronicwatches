@@ -80,6 +80,65 @@ namespace electronicwatches.functions.Function
             });
         }
 
+        [FunctionName(nameof(updateTime))]
+        public static async Task<IActionResult> updateTime(
+           [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "time/{id}")] HttpRequest req,
+           [Table("time", Connection = "AzureWebJobsStorage")] CloudTable timeTable,
+           string id,
+           ILogger log)
+        {
+
+            log.LogInformation($"Update for: {id}, received.");
+
+
+            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            timeWorked time = JsonConvert.DeserializeObject<timeWorked>(requestBody);
+
+            //validate id
+            TableOperation findid = TableOperation.Retrieve<TimeEntity>("TIME", id);
+            TableResult findresult = await timeTable.ExecuteAsync(findid);
+
+            if (findresult.Result == null)
+            {
+                return new BadRequestObjectResult(new Response
+                {
+                    Success = false,
+                    Message = "Not found."
+                });
+            }
+
+            //Update
+            TimeEntity timeEntity = (TimeEntity)findresult.Result;
+            timeEntity.Consolidated = time.Consolidated;
+            if (time.Type==0 || time.Type==1)
+            {
+                timeEntity.Type = time.Type;
+            }
+
+            if (!string.IsNullOrEmpty(time.BusinessHour.ToString()))
+            {
+                timeEntity.BusinessHour = time.BusinessHour;
+            }
+
+            if (time.Id >= 0)
+            {
+                timeEntity.Id = time.Id;
+            }
+
+            TableOperation updateOperation = TableOperation.Replace(timeEntity);
+            await timeTable.ExecuteAsync(updateOperation);
+            string message = $"field: {id} updated in table";
+            log.LogInformation(message);
+
+
+            return new OkObjectResult(new Response
+            {
+                Success = true,
+                Message = message,
+                Result = timeEntity
+            });
+
+        }
 
         [FunctionName(nameof(Getall))]
         public static async Task<IActionResult> Getall(
