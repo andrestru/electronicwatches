@@ -45,30 +45,35 @@ namespace electronicwatches.functions.Function
 
                                 total = total + (hour*60) + minute;
                                  log.LogInformation($"////////{minute}///{hour} ////////");
-                                completed.Consolidated = true;
+                               // completed.Consolidated = true;
                                 await timeTable.ExecuteAsync(TableOperation.Replace(completed));
                                 Consolidated++;
-                                log.LogInformation($"total dentro en minutos: {total}  trabajadas perro items at: {DateTime.Now}");
+                                log.LogInformation($"total dentro en minutos: {completed.Id.ToString()}  trabajadas perro items at: {DateTime.Now}");
                                  TableOperation findid = TableOperation.Retrieve<DateEntity>("DATE", completed.Id.ToString());
                                 TableResult findresult = await datesTable.ExecuteAsync(findid);
 
                             if(findresult.Result == null)
                             {
-                                DateEntity timeEntity = new DateEntity
-                                {
-                                    Id = completed.Id,
-                                    ETag = "*",
-                                    DateWorked = DateTime.UtcNow,
-                                    PartitionKey = "DATE",
-                                    RowKey = Guid.NewGuid().ToString(),
-                                    Hours = total,
-                                };
-                                TableOperation addOperation = TableOperation.Insert(timeEntity);
-                                await datesTable.ExecuteAsync(addOperation);
+                                   DateEntity timeEntity = new DateEntity
+                                   {
+                                       Id = completed.Id,
+                                       ETag = "*",
+                                       DateWorked = DateTime.UtcNow,
+                                       PartitionKey = "DATE",
+                                       RowKey = completed.Id.ToString(),
+                                       Hours = total,
+                                   };
+                                   TableOperation addOperation = TableOperation.Insert(timeEntity);
+                                   await datesTable.ExecuteAsync(addOperation);
+                                   log.LogInformation("**********NO EXISTO");
                             }
                             else
                             {
-
+                                DateEntity dateEntity = (DateEntity)findresult.Result;
+                                dateEntity.Hours += total;
+                                TableOperation updateOperation = TableOperation.Replace(dateEntity);
+                                await datesTable.ExecuteAsync(updateOperation);
+                                log.LogInformation($"YA EXISTO!!!   {total}");
                             }
                                
                         }
