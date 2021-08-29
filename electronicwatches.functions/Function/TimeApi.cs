@@ -224,5 +224,35 @@ namespace electronicwatches.functions.Function
         }
 
 
+        [FunctionName(nameof(GetbyDate))]
+        public static async Task<IActionResult> GetbyDate(
+          [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "date/{DateWorked}")] HttpRequest req,
+          [Table("date", "DATE", "{DateWorked}", Connection = "AzureWebJobsStorage")] DateEntity dateEntity,
+          DateTime DateWorked,
+          ILogger log)
+        {
+            log.LogInformation($"get by date: {DateWorked}, recieved");
+
+            if (dateEntity == null)
+            {
+                return new BadRequestObjectResult(new Response
+                {
+                    Success = false,
+                    Message = "Not Found"
+                });
+            }
+
+            string message = $"Field: {dateEntity.DateWorked}, retrieved";
+            log.LogInformation(message);
+
+            return new OkObjectResult(new Response
+            {
+                Success = true,
+                Message = message,
+                Result = dateEntity
+            });
+
+        }
+
     }
 }

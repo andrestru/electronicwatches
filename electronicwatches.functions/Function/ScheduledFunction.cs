@@ -13,7 +13,7 @@ namespace electronicwatches.functions.Function
         [FunctionName("ScheduledFunction")]
         public static async Task Run([TimerTrigger("0 */1 * * * *")] TimerInfo myTimer,
             [Table("time", Connection = "AzureWebJobsStorage")] CloudTable timeTable,
-            [Table("dates", Connection = "AzureWebJobsStorage")] CloudTable datesTable,
+            [Table("date", Connection = "AzureWebJobsStorage")] CloudTable datesTable,
             ILogger log)
         {
 
@@ -45,8 +45,10 @@ namespace electronicwatches.functions.Function
 
                                 total = total + (hour*60) + minute;
                                  log.LogInformation($"////////{minute}///{hour} ////////");
-                               // completed.Consolidated = true;
+                                completed.Consolidated = true;
+                                login.Consolidated = true;
                                 await timeTable.ExecuteAsync(TableOperation.Replace(completed));
+                                await timeTable.ExecuteAsync(TableOperation.Replace(login));
                                 Consolidated++;
                                 log.LogInformation($"total dentro en minutos: {completed.Id.ToString()}  trabajadas perro items at: {DateTime.Now}");
                                  TableOperation findid = TableOperation.Retrieve<DateEntity>("DATE", completed.Id.ToString());
