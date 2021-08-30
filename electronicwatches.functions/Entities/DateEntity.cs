@@ -5,6 +5,7 @@ namespace electronicwatches.functions.Entities
 {
     public class DateEntity : TableEntity
     {
+
         public int Id { get; set; }
 
         public DateTime DateWorked { get; set; }

@@ -5,6 +5,7 @@ namespace electronicwatches.functions.Entities
 {
     public class TimeEntity : TableEntity
     {
+
         public int Id { get; set; }
 
         public DateTime BusinessHour { get; set; }
@@ -12,5 +13,6 @@ namespace electronicwatches.functions.Entities
         public int Type { get; set; }
 
         public bool Consolidated { get; set; }
+
     }
 }
