@@ -11,6 +11,7 @@ using Microsoft.WindowsAzure.Storage.Table;
 using electronicwatches.Common.Model;
 using electronicwatches.Common.Response;
 using electronicwatches.functions.Entities;
+using System.Collections.Generic;
 
 namespace electronicwatches.functions.Function
 {
@@ -226,33 +227,32 @@ namespace electronicwatches.functions.Function
 
         [FunctionName(nameof(GetbyDate))]
         public static async Task<IActionResult> GetbyDate(
-          [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "date/{DateWorked}")] HttpRequest req,
-          [Table("date", "DATE", "{DateWorked}", Connection = "AzureWebJobsStorage")] DateEntity dateEntity,
+          [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "datef/{DateWorked}")] HttpRequest req,
+          [Table("date", Connection = "AzureWebJobsStorage")] CloudTable dateTable,
           DateTime DateWorked,
           ILogger log)
         {
-            log.LogInformation($"get by date: {DateWorked}, recieved");
 
-            if (dateEntity == null)
+            TableQuery<DateEntity> table = new TableQuery<DateEntity>();
+            TableQuerySegment<DateEntity> querys = await dateTable.ExecuteQuerySegmentedAsync(table, null);
+            List<DateEntity> aux = new List<DateEntity>();
+
+            for (int i=0; i<querys.Results.Count; i++)
             {
-                return new BadRequestObjectResult(new Response
+                if (querys.Results[i].DateWorked.Equals(DateWorked))
                 {
-                    Success = false,
-                    Message = "Not Found"
-                });
+                    aux.Add(querys.Results[i]);
+                }
             }
-
-            string message = $"Field: {dateEntity.DateWorked}, retrieved";
-            log.LogInformation(message);
+            
 
             return new OkObjectResult(new Response
             {
                 Success = true,
-                Message = message,
-                Result = dateEntity
+                Message = "Records found.",
+                Result = aux
             });
 
         }
-
     }
 }

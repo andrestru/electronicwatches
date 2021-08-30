@@ -1,11 +1,9 @@
 ﻿using Microsoft.WindowsAzure.Storage.Table;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace electronicwatches.functions.Entities
 {
-    public class TimeEntity : TableEntity 
+    public class TimeEntity : TableEntity
     {
         public int Id { get; set; }
 
