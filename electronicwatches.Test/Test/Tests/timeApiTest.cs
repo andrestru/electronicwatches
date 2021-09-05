@@ -55,7 +55,7 @@ namespace electronicwatches.functions.Test.Tests
          {
             MockCloudTableTodos mockTime = new MockCloudTableTodos(new Uri("http://127.0.0.1:10002/devstoreaccount1/reports/?comp=TIME"));
             TimeEntity requestentity = TestFactory.GettimeEntity();
-            HttpRequest request = TestFactory.CreateHttpRequest(requestentity);
+            DefaultHttpRequest request = TestFactory.CreateHttpRequest(requestentity);
 
           
             IActionResult response = await TimeApi.Getall(request, mockTime, logger);
@@ -72,7 +72,7 @@ namespace electronicwatches.functions.Test.Tests
             MockCloudTableTodos mockTime = new MockCloudTableTodos(new Uri("http://127.0.0.1:10002/devstoreaccount1/reports"));
             TimeEntity timeRequest = TestFactory.GettimeEntity();
 
-            HttpRequest request = TestFactory.CreateHttpRequestforDelete(timeRequest.RowKey, timeRequest);
+            DefaultHttpRequest request = TestFactory.CreateHttpRequestforDelete(timeRequest.RowKey, timeRequest);
             
             IActionResult response = await TimeApi.DeletebyId(request, timeRequest, mockTime,  timeRequest.Id.ToString(),logger);
 
@@ -85,7 +85,7 @@ namespace electronicwatches.functions.Test.Tests
         {
            TimeEntity timeRequest = TestFactory.GetTodoRequest();
             Guid timeId = Guid.NewGuid();
-            HttpRequest request = TestFactory.CreateHttpRequest(timeId, timeRequest);
+            DefaultHttpRequest request = TestFactory.CreateHttpRequest(timeId, timeRequest);
 
             IActionResult response = await TimeApi.GetbyId(request, timeRequest, timeId.ToString(), logger);
 
@@ -100,7 +100,7 @@ namespace electronicwatches.functions.Test.Tests
             MockTableDate mockTime = new MockTableDate(new Uri("http://127.0.0.1:10002/devstoreaccount1/reports"));
             DateEntity dateRequest = TestFactory.GetDateRequest();
 
-            HttpRequest request = TestFactory.CreateHttpRequest(dateRequest);
+            DefaultHttpRequest request = TestFactory.CreateHttpRequest(dateRequest);
 
             IActionResult response = await TimeApi.GetbyDate(request, mockTime, dateRequest.DateWorked, logger);
 

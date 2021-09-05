@@ -139,5 +139,39 @@ namespace electronicwatches.functions.Test.Helpers
 
             return logger;
         }
+
+        public static List<TimeEntity> GetAll()
+        {
+            List<TimeEntity> listTime = new List<TimeEntity>();
+            TimeEntity entity = new TimeEntity
+            {
+                ETag = "*",
+                PartitionKey = "TIME",
+                RowKey = Guid.NewGuid().ToString(),
+                Id = 2,
+                BusinessHour = DateTime.UtcNow,
+                Type = 0,
+                Consolidated = false
+            };
+            listTime.Add(entity);
+            return listTime;
+        }
+
+        public static List<DateEntity> GetAllByDate()
+        {
+            List<DateEntity> listTime = new List<DateEntity>();
+            DateEntity entity = new DateEntity
+            {
+                ETag = "*",
+                PartitionKey = "DATE",
+                RowKey = Guid.NewGuid().ToString(),
+                DateWorked = DateTime.UtcNow,
+                Id = 2,
+                Minute = 50
+            };
+            listTime.Add(entity);
+            return listTime;
+        }
+
     }
 }
