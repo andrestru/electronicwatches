@@ -51,6 +51,9 @@ namespace electronicwatches.functions.Function
 
                             TableOperation findid = TableOperation.Retrieve<DateEntity>("DATE", completed.Id.ToString());
                             TableResult findresult = await datesTable.ExecuteAsync(findid);
+                            int y = DateTime.Now.Year;
+                            int m = DateTime.Now.Month;
+                            int d = DateTime.Now.Day;
 
                             if (findresult.Result == null)
                             {
@@ -58,7 +61,7 @@ namespace electronicwatches.functions.Function
                                 {
                                     Id = completed.Id,
                                     ETag = "*",
-                                    DateWorked = DateTime.Parse(completed.BusinessHour.ToString().Substring(0, 10) + "Z"),
+                                    DateWorked = DateTime.Parse($"{y}-{m}-{d}Z"),
                                     PartitionKey = "DATE",
                                     RowKey = completed.Id.ToString(),
                                     Minute = total,
