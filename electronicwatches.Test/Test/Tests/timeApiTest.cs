@@ -53,15 +53,15 @@ namespace electronicwatches.functions.Test.Tests
          [Fact]
          public async void GetTime_Should_Return_200()
          {
-            MockCloudTableTodos mockTime = new MockCloudTableTodos(new Uri("http://127.0.0.1:10002/devstoreaccount1/reports"));
-            TimeEntity requeste = TestFactory.GettimeEntity();
-            HttpRequest request = TestFactory.CreateHttpRequest(requeste);
+            MockCloudTableTodos mockTime = new MockCloudTableTodos(new Uri("http://127.0.0.1:10002/devstoreaccount1/reports/?comp=TIME"));
+            TimeEntity requestentity = TestFactory.GettimeEntity();
+            HttpRequest request = TestFactory.CreateHttpRequest(requestentity);
 
           
             IActionResult response = await TimeApi.Getall(request, mockTime, logger);
 
              var result = (OkObjectResult)response;
-             Assert.Equal(true, true);
+             Assert.Equal(StatusCodes.Status200OK, result.StatusCode);
 
          }
 
@@ -83,8 +83,7 @@ namespace electronicwatches.functions.Test.Tests
         [Fact]
         public async void GetbyId_Should_Return_200()
         {
-     //       MockCloudTableTodos mockTime = new MockCloudTableTodos(new Uri("http://127.0.0.1:10002/devstoreaccount1/reports"));
-            TimeEntity timeRequest = TestFactory.GetTodoRequest();
+           TimeEntity timeRequest = TestFactory.GetTodoRequest();
             Guid timeId = Guid.NewGuid();
             HttpRequest request = TestFactory.CreateHttpRequest(timeId, timeRequest);
 
@@ -99,7 +98,7 @@ namespace electronicwatches.functions.Test.Tests
         public async void GetbyDate_Should_Return_200()
         {
             MockTableDate mockTime = new MockTableDate(new Uri("http://127.0.0.1:10002/devstoreaccount1/reports"));
-            DateEntity dateRequest = TestFactory.GetDateEntity();
+            DateEntity dateRequest = TestFactory.GetDateRequest();
 
             HttpRequest request = TestFactory.CreateHttpRequest(dateRequest);
 

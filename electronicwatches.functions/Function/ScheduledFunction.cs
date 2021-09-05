@@ -16,7 +16,7 @@ namespace electronicwatches.functions.Function
             ILogger log)
         {
 
-            log.LogInformation($"calculating Dates function executed at: {DateTime.Now}");
+            log.LogInformation("Scheduled function started successfully");
 
 
 
